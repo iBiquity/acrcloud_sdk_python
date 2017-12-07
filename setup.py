@@ -21,7 +21,7 @@ else:
 
 setup(
     name="pyacrcloud",
-    version="1.0.1",
+    version="1.0.0.post1",
     packages=find_packages(package_path),
     package_dir={"": package_path},
 
@@ -29,7 +29,9 @@ setup(
         '': ['*.txt', '*.rst'],
         'acrcloud': ['*.so', '*.pyd'],
     },
-
+    install_requires=[
+        'async_timeout',
+    ],
     author="ACRCloud",
     author_email="support@acrcloud.com",
     description='Python wrapper for acrcloud libraries',
