@@ -20,7 +20,7 @@ import asyncio
 import acrcloud_extr_tool
 
 '''
-Copyright 2015 ACRCloud Recognizer v1.0.0.post3
+Copyright 2015 ACRCloud Recognizer v1.2.0.post1
 
 This module can recognize ACRCloud by most of audio/video file. 
         Audio: mp3, wav, m4a, flac, aac, amr, ape, ogg ...
@@ -68,6 +68,7 @@ class ACRCloudRecognizer:
         self.access_key = config.get('access_key')
         self.access_secret = config.get('access_secret')
         self.timeout = config.get('timeout', 5)
+        self.scheme = config.get('scheme', 'https://')
         self.recognize_type = config.get('recognize_type', ACRCloudRecognizeType.ACR_OPT_REC_AUDIO)
         if self.recognize_type > 3 or self.recognize_type < 0:
             self.recognize_type = ACRCloudRecognizeType.ACR_OPT_REC_AUDIO
@@ -101,7 +102,7 @@ class ACRCloudRecognizer:
 
         try:
             headers = {'Content-Type': content_type, 'Referer': url}
-            response = asyncio.wait_for(
+            response = await asyncio.wait_for(
                 self.session.request('POST', url, data=body, headers=headers),
                 timeout=timeout)
             text = await response.read()
@@ -178,8 +179,8 @@ class ACRCloudRecognizer:
                 return ACRCloudStatusCode.get_result_error(ACRCloudStatusCode.NOT_HUMMING_ERROR_CODE)
             fields['sample_hum_bytes'] = str(sample_hum_bytes)
 
-        server_url = 'https://' + host + http_url_file
-        res = self.post_multipart(server_url, fields, query_data, timeout)
+        server_url = self.scheme + host + http_url_file
+        res = await self.post_multipart(server_url, fields, query_data, timeout)
         return res
 
     async def recognize(self, wav_audio_buffer, cfactor = 4):
